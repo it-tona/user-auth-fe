@@ -11,7 +11,7 @@ function Register() {
     e.preventDefault();
     setMessage("");
 
-    const res = await fetch("http://localhost:8080/api/auth/register", {
+    const res = await fetch("https://user-auth-api-production-5340.up.railway.app/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password, fullName }),
