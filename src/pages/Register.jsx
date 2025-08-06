@@ -1,62 +1,41 @@
-// src/pages/Login.jsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function Register() {
-  const [email, setEmail] = useState("emelin@gmail.com");
-  const [password, setPassword] = useState("password");
-  const [fullName, setFullName] = useState("Emelin");
-  const [message, setMessage] = useState("...");
+export default function Register() {
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  async function handleSubmit(e) {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    setMessage("");
+    try {
+      const res = await fetch("https://user-auth-api-production-5340.up.railway.app/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          fullName,
+          password
+        })
+      });
 
-    const res = await fetch("https://user-auth-api-production-5340.up.railway.app/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, fullName }),
-    });
+      if (!res.ok) throw new Error("Registrazione fallita");
 
-    if (res.ok) {
-      const data = await res.json();
-      localStorage.setItem("token", data.token); // salva token
-      setMessage("Registration effettuato!");
-    } else {
-      setMessage("Errore Registration");
+      alert("Registrazione completata, ora puoi fare login");
+      navigate("/login");
+    } catch (err) {
+      alert(err.message);
     }
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Ragistration</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <br />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <br />
-        <input
-            type="text"
-            placeholder="Full Name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            required
-        />  
-    <br />
+    <form onSubmit={handleRegister}>
+      <h2>Register</h2>
+      <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+      <input type="text" placeholder="Full Name" value={fullName} onChange={e => setFullName(e.target.value)} required />
+      <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
       <button type="submit">Register</button>
-      <p>{message}</p>
     </form>
   );
 }
-
-export default Register;
